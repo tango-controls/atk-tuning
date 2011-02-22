@@ -1,24 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
 	<parent>
+		<artifactId>super-pom</artifactId>
 		<groupId>fr.soleil</groupId>
-		<artifactId>super-pom-java</artifactId>
-		<version>RELEASE</version>
+		<version>1.1</version>
 	</parent>
-
+	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.esrf.gui</groupId>
 	<artifactId>AtkTuning</artifactId>
-	<version>2.10.0</version>
-
-    <name>AtkTuning</name>
+	<name>AtkTuning</name>
+	<version>2.9</version>
 	<description>AtkTuning</description>
-
 	<scm>
-		<connection>${scm.connection.cvs.tango-cs}:tango/tools/atktuning</connection>
-		<developerConnection>${scm.developerConnection.cvs.tango-cs}:tango/tools/atktuning</developerConnection>
-		<url>${scm.url.cvs.tango-cs}/tango/tools/atktuning</url>
+		<connection>scm:cvs:pserver:tango-cs.cvs.sourceforge.net:/cvsroot/tango-cs:tango//tools/atktuning/</connection>
+		<url>http://controle/cgi-bin/viewvc.cgi/GUI/Tools/AtkTuningWeb/</url>
 	</scm>
 
 	<build>
@@ -37,14 +33,17 @@
 		<dependency>
 			<groupId>fr.esrf.tango</groupId>
 			<artifactId>TangORB</artifactId>
+			<version>${TangORB.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>fr.esrf.atk</groupId>
 			<artifactId>ATKWidget</artifactId>
+			<version>${ATKWidget.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>fr.esrf.atk</groupId>
 			<artifactId>ATKCore</artifactId>
+			<version>${ATKCore.version}</version>
 		</dependency>
 	</dependencies>
 </project>
