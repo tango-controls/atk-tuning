@@ -1,7 +1,7 @@
 #!/bin/sh
 rm -f atktuning/*.class
 JAVALIB=/segfs/tango/lib/java;
-MYLIB=$JAVALIB/ATKWidget.jar:$JAVALIB/ATKCore.jar
+MYLIB=/users/pons/atk/lib;
 CLASSPATH=$JAVALIB/TangORB.jar:$MYLIB:$JAVALIB/ATKtools.jar:.
 export CLASSPATH
 echo $CLASSPATH
