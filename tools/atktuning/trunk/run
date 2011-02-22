@@ -1,0 +1,9 @@
+#!/bin/sh
+JAVALIB=/segfs/tango/lib/java;
+MYLIB=/users/pons/atk/lib;
+CLASSPATH=$JAVALIB/TangORB.jar:$JAVALIB/ATKtools.jar:$MYLIB:.
+#CLASSPATH=$JAVALIB/TangORB.jar:$JAVALIB/ATKtools.jar:$JAVALIB/ATKCore.jar:$JAVALIB/ATKWidget.jar:.
+export CLASSPATH
+echo $CLASSPATH
+echo  Starting ...
+java -DTANGO_HOST=$TANGO_HOST atktuning.MainPanel $@
