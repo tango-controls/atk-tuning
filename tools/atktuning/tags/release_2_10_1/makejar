@@ -1,0 +1,3 @@
+#!/bin/sh
+rm AtkTuning.jar
+jar cvf AtkTuning.jar atktuning/*.class atktuning/icon.gif
