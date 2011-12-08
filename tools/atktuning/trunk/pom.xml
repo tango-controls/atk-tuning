@@ -10,15 +10,15 @@
 
 	<groupId>fr.esrf.gui</groupId>
 	<artifactId>AtkTuning</artifactId>
-	<version>2.10.0</version>
+	<version>2.10.1</version>
 
-    <name>AtkTuning</name>
+  <name>AtkTuning</name>
 	<description>AtkTuning</description>
 
 	<scm>
-		<connection>${scm.connection.cvs.tango-cs}:tango/tools/atktuning</connection>
-		<developerConnection>${scm.developerConnection.cvs.tango-cs}:tango/tools/atktuning</developerConnection>
-		<url>${scm.url.cvs.tango-cs}/tango/tools/atktuning</url>
+		<connection>${scm.connection.svn.tango-cs}/tools/atktuning</connection>
+		<developerConnection>${scm.developerConnection.svn.tango-cs}/tools/atktuning</developerConnection>
+		<url>${scm.url.svn.tango-cs}/tools/atktuning</url>
 	</scm>
 
 	<build>
@@ -35,7 +35,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>fr.esrf.tango</groupId>
+			<groupId>org.tango</groupId>
 			<artifactId>TangORB</artifactId>
 		</dependency>
 		<dependency>
