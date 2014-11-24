@@ -37,6 +37,7 @@ class TuningPanel extends JPanel implements ActionListener {
 	private final JFrame parentFrame;
 	private final boolean showCommand;
 	private final boolean readOnly;
+  private final int rowHeiht;
 
 	static private SimplePropertyFrame propFrame = null;
 	static private Color uColor = new Color(130, 130, 130);
@@ -47,7 +48,8 @@ class TuningPanel extends JPanel implements ActionListener {
 		int i;
 		int nb = cfg.getNbItem();
 		theCfg = cfg;
-		height = maxH;
+    rowHeiht = 45;
+		height = maxH * rowHeiht;
 		this.showCommand = showCommand;
 		this.readOnly = readOnly;
 
@@ -60,7 +62,6 @@ class TuningPanel extends JPanel implements ActionListener {
 		labels = new LabelViewer[nb];
 		for (i = 0; i < nb; i++) {
 			labels[i] = new LabelViewer();
-			labels[i].setFont(f);
 			INumberScalar m = cfg.getAtt(i);
 			labels[i].setModel(m);
 			// labels[i].setToolTipText(m.getName());
@@ -79,7 +80,7 @@ class TuningPanel extends JPanel implements ActionListener {
 			INumberScalar m = cfg.getAtt(i);
 			if (m.isWritable()) {
 				setters[i] = new NumberScalarWheelEditor();
-				setters[i].setFont(f);
+				if(f!=null) setters[i].setFont(f);
 				setters[i].setBackground(getBackground());
 				setters[i].setModel(m);
 				Dimension d = setters[i].getPreferredSize();
@@ -96,7 +97,7 @@ class TuningPanel extends JPanel implements ActionListener {
 
 		// Create title
 		title = new JSmoothLabel();
-		title.setFont(tf);
+		if(tf!=null) title.setFont(tf);
 		title.setBackground(getBackground());
 		title.setHorizontalAlignment(JSmoothLabel.CENTER_ALIGNMENT);
 		title.setText(getConfig().getTitle());
@@ -107,14 +108,14 @@ class TuningPanel extends JPanel implements ActionListener {
 		values = new SimpleScalarViewer[nb];
 		for (i = 0; i < nb; i++) {
 			values[i] = new SimpleScalarViewer();
+      values[i].setHorizontalAlignment(JAutoScrolledText.RIGHT_ALIGNMENT);
+      values[i].setMargin(new Insets(0,0,0,10));
+      values[i].setBackgroundColor(getBackground());
 			values[i].setFont(f);
 			values[i].setBorder(javax.swing.BorderFactory
-					.createLoweredBevelBorder());
+          .createLoweredBevelBorder());
 			values[i].setBounds(maxLabWidth + 4, (i + 1) * 32, 150, 30);
-			values[i]
-					.setHorizontalAlignment(JAutoScrolledText.CENTER_ALIGNMENT);
 			values[i].setModel(cfg.getAtt(i));
-			// values[i].setValueOffsets(0,-3); // deprecated
 			values[i].setBackground(uColor);
 			values[i].setText("------");
 			values[i].setEditable(readOnly);
@@ -156,28 +157,34 @@ class TuningPanel extends JPanel implements ActionListener {
 
 		int i;
 		int nb = theCfg.getNbItem();
+    int compH = rowHeiht-2;
 
 		if (showCommand)
-			title.setBounds(2, 2, 186 + maxWheelWidth + maxLabWidth, 28);
+			title.setBounds(2, 2, 186 + maxWheelWidth + maxLabWidth, compH);
 		else
-			title.setBounds(2, 2, 156 + maxWheelWidth + maxLabWidth, 28);
+			title.setBounds(2, 2, 156 + maxWheelWidth + maxLabWidth, compH);
 
 		// Place components
 		for (i = 0; i < nb; i++) {
-			labels[i].setBounds(2, (i + 1) * 32, maxLabWidth, 30);
-			values[i].setBounds(maxLabWidth + 4, (i + 1) * 32, 150, 30);
-			if (setters[i] != null)
-				setters[i].setBounds(maxLabWidth + 156, (i + 1) * 32,
-						maxWheelWidth, 32);
+
+			labels[i].setBounds(2, (i + 1) * rowHeiht, maxLabWidth, compH);
+
+			values[i].setBounds(maxLabWidth + 4, (i + 1) * rowHeiht+3, 150, compH-6);
+
+      if (setters[i] != null)
+				setters[i].setBounds(maxLabWidth + 156, (i + 1) * rowHeiht,
+						maxWheelWidth, compH);
+
 			if (showCommand) {
 				commands[i].setBounds(maxLabWidth + maxWheelWidth + 157,
-						(i + 1) * 32, 30, 28);
+						(i + 1) * rowHeiht+6, 30, compH-12);
 				propBtn[i].setBounds(maxLabWidth + maxWheelWidth + 187,
-						(i + 1) * 32, 30, 28);
+						(i + 1) * rowHeiht+6, 30, compH-12);
 			} else {
 				propBtn[i].setBounds(maxLabWidth + maxWheelWidth + 157,
-						(i + 1) * 32, 30, 28);
+						(i + 1) * rowHeiht+6, 30, compH-12);
 			}
+
 		}
 
 	}
@@ -234,7 +241,7 @@ class TuningPanel extends JPanel implements ActionListener {
 			return new Dimension(190 + maxWheelWidth + maxLabWidth, height + 2);
 	}
 
-	public Dimension getMinimunSize() {
+	public Dimension getMinimumSize() {
 		return getPreferredSize();
 	}
 

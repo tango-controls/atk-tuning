@@ -3,11 +3,7 @@
  */
 package atktuning;
 
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Image;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -37,6 +33,7 @@ import fr.esrf.tangoatk.core.ISetErrorListener;
 import fr.esrf.tangoatk.widget.attribute.Trend;
 import fr.esrf.tangoatk.widget.util.ErrorHistory;
 import fr.esrf.tangoatk.widget.util.ErrorPane;
+import fr.esrf.tangoatk.widget.util.JSmoothLabel;
 import fr.esrf.tangoatk.widget.util.Splash;
 
 /**
@@ -53,8 +50,8 @@ public class MainPanel extends JFrame implements IErrorListener,
 	private JPanel thePanel;
 	private JScrollPane theView;
 	private JMenuBar mainMenu;
-	private Font theFont;
-	private Font titleFont;
+	private Font theFont=null;
+	private Font titleFont=null;
 	private int nbPanel = 0;
 	private TuningPanel[] panels;
 
@@ -62,7 +59,7 @@ public class MainPanel extends JFrame implements IErrorListener,
 	private final boolean showCommand;
 	private final boolean readOnly;
 	ErrorHistory errorHistory;
-	private final String appVersion = "AtkTuning 2.9";
+	private final String appVersion = "AtkTuning 3.0";
 
 	// Keep one attribute list for the whole application
 	public AttributePolledList attList = null;
@@ -117,22 +114,22 @@ public class MainPanel extends JFrame implements IErrorListener,
 			getContentPane().setLayout(null);
 
 			// Read config file
-			setTitle(appVersion + "[" + filename + "]");
+			setTitle(appVersion + " [" + filename + "]");
 			String[][] list = readConfigFile(filename);
 			nbPanel = list.length;
-			theFont = new Font("Dialog", Font.PLAIN, 14);
+			theFont = new Font("Lucida Bright", Font.PLAIN, 16);
 			titleFont = new Font("Dialog", Font.BOLD, 16);
 
 			thePanel = new JPanel();
 			thePanel.setBackground(getBackground());
-			thePanel.setLayout(new FlowLayout());
+			thePanel.setLayout(new BorderLayout());
 			thePanel.setBorder(null);
 
 			// Get the max height
-			int max = 0;
+			int maxRows = 0;
 			for (i = 0; i < nbPanel; i++)
-				if (list[i].length > max)
-					max = list[i].length;
+				if (list[i].length > maxRows)
+          maxRows = list[i].length;
 
 			// Create the global attribute list
 			attList = new AttributePolledList();
@@ -157,13 +154,17 @@ public class MainPanel extends JFrame implements IErrorListener,
 			panels = new TuningPanel[nbPanel];
 
 			for (i = 0; i < nbPanel; i++) {
+
 				splashScreen.setMessage("Panel " + (i + 1) + "/" + nbPanel
 						+ ":");
+
+        // Tuning panel
 				TuningConfig cfg = new TuningConfig(list[i], runFromShell,
 						splashScreen, attList, this);
-				panels[i] = new TuningPanel(cfg, theFont, titleFont, max * 32,
+				panels[i] = new TuningPanel(cfg, theFont, titleFont, maxRows,
 						showCommand, readOnly, this);
 				thePanel.add(panels[i]);
+
 			}
 
 			// Start refreshers
@@ -268,7 +269,7 @@ public class MainPanel extends JFrame implements IErrorListener,
 			int h = d.height + 85;
 			if (h > 768)
 				h = 768;
-			int w = d.width + 30;
+			int w = d.width + 45;
 			if (w > 1024)
 				w = 1024;
 
