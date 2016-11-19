@@ -1,50 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>fr.soleil</groupId>
-		<artifactId>super-pom-java</artifactId>
-		<version>RELEASE</version>
-	</parent>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<groupId>fr.esrf.gui</groupId>
-	<artifactId>AtkTuning</artifactId>
-	<version>2.10.1</version>
+    <groupId>org.tango.atk</groupId>
+    <artifactId>ATKTuning</artifactId>
+    <version>2.10.2-SNAPSHOT</version>
 
-  <name>AtkTuning</name>
-	<description>AtkTuning</description>
+    <name>AtkTuning</name>
+    <description>AtkTuning</description>
 
-	<scm>
-		<connection>${scm.connection.svn.tango-cs}/tools/atktuning</connection>
-		<developerConnection>${scm.developerConnection.svn.tango-cs}/tools/atktuning</developerConnection>
-		<url>${scm.url.svn.tango-cs}/tools/atktuning</url>
-	</scm>
+    <scm>
+        <connection>scm:git:git@github.com:tango-controls/atk-tuning.git</connection>
+        <developerConnection>scm:git:git@github.com:tango-controls/atk-tuning.git</developerConnection>
+        <url>https://github.com/tango-controls/atk-tuning</url>
+        <tag>HEAD</tag>
+    </scm>
 
-	<build>
-		<sourceDirectory>.</sourceDirectory>
-		<resources>
-			<resource>
-				<directory>.</directory>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
-			</resource>
-		</resources>
-	</build>
+    <distributionManagement>
+        <repository>
+            <id>bintray-tango-controls</id>
+            <url>https://api.bintray.com/maven/tango-controls/maven/${project.artifactId}/;publish=1</url>
+        </repository>
+    </distributionManagement>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.tango</groupId>
-			<artifactId>TangORB</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>fr.esrf.atk</groupId>
-			<artifactId>ATKWidget</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>fr.esrf.atk</groupId>
-			<artifactId>ATKCore</artifactId>
-		</dependency>
-	</dependencies>
+    <build>
+        <plugins>
+
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <releaseProfiles>release</releaseProfiles>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>atktuning.MainPanel</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.tango</groupId>
+            <artifactId>TangORB</artifactId>
+            <version>9.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tango.atk</groupId>
+            <artifactId>ATKWidget</artifactId>
+            <version>9.1.16</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tango.atk</groupId>
+            <artifactId>ATKCore</artifactId>
+            <version>9.1.16</version>
+        </dependency>
+    </dependencies>
 </project>
