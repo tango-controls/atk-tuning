@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.tango.atk</groupId>
-    <artifactId>AtkTuning</artifactId>
+    <artifactId>ATKTuning</artifactId>
     <version>4.3-SNAPSHOT</version>
 
     <name>AtkTuning</name>
