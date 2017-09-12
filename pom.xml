@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.tango.atk</groupId>
-    <artifactId>ATKTuning</artifactId>
+    <artifactId>AtkTuning</artifactId>
     <version>2.10.3-SNAPSHOT</version>
 
     <name>AtkTuning</name>
@@ -23,6 +23,21 @@
         </repository>
     </distributionManagement>
 
+    <repositories>
+        <repository>
+            <id>bintray-tango-controls</id>
+            <url>http://dl.bintray.com/tango-controls/maven</url>
+        </repository>
+        <repository>
+            <id>local-contrib</id>
+            <url>file://${project.basedir}/contrib</url>
+        </repository>
+        <repository>
+            <id>mvnrepository</id>
+            <url>https://mvnrepository.com/artifact</url>
+        </repository>
+    </repositories>
+
     <build>
         <plugins>
 
@@ -35,6 +50,7 @@
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -43,6 +59,8 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <mainClass>atktuning.MainPanel</mainClass>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>
                     </archive>
                 </configuration>
@@ -52,20 +70,32 @@
     </build>
 
     <dependencies>
+
         <dependency>
             <groupId>org.tango</groupId>
             <artifactId>TangORB</artifactId>
-            <version>9.1.2</version>
+            <version>RELEASE</version>
         </dependency>
+
         <dependency>
             <groupId>org.tango.atk</groupId>
             <artifactId>ATKWidget</artifactId>
-            <version>9.1.16</version>
+            <version>RELEASE</version>
         </dependency>
+
         <dependency>
             <groupId>org.tango.atk</groupId>
             <artifactId>ATKCore</artifactId>
-            <version>9.1.16</version>
+            <version>RELEASE</version>
         </dependency>
+
+        <dependency>
+            <groupId>fr.esrf.taco</groupId>
+            <artifactId>Taco</artifactId>
+            <version>1.18</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
+
 </project>
