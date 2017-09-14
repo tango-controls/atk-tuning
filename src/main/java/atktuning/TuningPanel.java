@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 
 import fr.esrf.tangoatk.core.CommandList;
 import fr.esrf.tangoatk.core.INumberScalar;
+import fr.esrf.tangoatk.widget.attribute.NumberScalarWheelEditor;
 import fr.esrf.tangoatk.widget.attribute.SimplePropertyFrame;
 import fr.esrf.tangoatk.widget.attribute.SimpleScalarViewer;
 import fr.esrf.tangoatk.widget.command.CommandMenuViewer;
@@ -28,6 +29,7 @@ class TuningPanel extends JPanel implements ActionListener {
 	private final JSmoothLabel title;
 	private final LabelViewer[] labels;
 	private final SimpleScalarViewer[] values;
+  private final NumberScalarWheelEditor[] setters;
 	private CommandMenuViewer[] commands;
 	private final JButton[] propBtn;
   private final JButton[] setBtn;
@@ -36,23 +38,22 @@ class TuningPanel extends JPanel implements ActionListener {
 	private final TuningConfig theCfg;
 	private final JFrame parentFrame;
 	private final boolean showCommand;
-  private int setBtnWidth = 30;
+  private int setterWidth = 0;
+  private int rowHeight = 28;
 
 	static private SimplePropertyFrame propFrame = null;
 	static private Color uColor = new Color(130, 130, 130);
-  static private int rowHeight = 28;
   static private int viewerWidth = 120;
   static private int titleHeight = 40;
   static private Font titleFont = new Font("Dialog", Font.BOLD, 18);
   static private Font viewerFont = new Font("Dialog", Font.BOLD, 14);
 
 	public TuningPanel(TuningConfig cfg, int maxH,
-			boolean showCommand, boolean readOnly, JFrame parent) {
+			boolean showCommand, boolean readOnly, boolean showEditor, JFrame parent) {
 
 		int i;
 		int nb = cfg.getNbItem();
 		theCfg = cfg;
-		height = maxH * rowHeight + titleHeight;
 		this.showCommand = showCommand;
 
 		parentFrame = parent;
@@ -84,22 +85,52 @@ class TuningPanel extends JPanel implements ActionListener {
 		}
 
 		// Create setters button
-		setBtn = new JButton[nb];
+    if (showEditor) {
 
-		for (i = 0; i < nb; i++) {
-			INumberScalar m = cfg.getAtt(i);
-			if (m.isWritable()) {
-        setBtn[i] = new JButton("...");
-        setBtn[i].addActionListener(this);
-				if (readOnly)
-          setBtn[i].setEnabled(false);
-				add(setBtn[i]);
-			} else {
-        setBtn[i] = null;
-			}
-		}
+      setBtn = null;
+      setters = new NumberScalarWheelEditor[nb];
 
-		// Create scalar viewer
+      for (i = 0; i < nb; i++) {
+
+        INumberScalar m = cfg.getAtt(i);
+        if (m.isWritable()) {
+          setters[i] = new NumberScalarWheelEditor();
+          setters[i].setBackground(getBackground());
+          setters[i].setFont(viewerFont);
+          setters[i].setModel(cfg.getAtt(i));
+
+          if (readOnly)
+            setters[i].setEnabled(false);
+          add(setters[i]);
+        } else {
+          setters[i] = null;
+        }
+
+      }
+
+    } else {
+
+      setters = null;
+      setBtn = new JButton[nb];
+
+      for (i = 0; i < nb; i++) {
+
+        INumberScalar m = cfg.getAtt(i);
+        if (m.isWritable()) {
+          setBtn[i] = new JButton("...");
+          setBtn[i].addActionListener(this);
+          if (readOnly)
+            setBtn[i].setEnabled(false);
+          add(setBtn[i]);
+        } else {
+          setBtn[i] = null;
+        }
+
+      }
+
+    }
+
+    // Create scalar viewer
 		values = new SimpleScalarViewer[nb];
 		for (i = 0; i < nb; i++) {
 			values[i] = new SimpleScalarViewer();
@@ -109,7 +140,6 @@ class TuningPanel extends JPanel implements ActionListener {
 			values[i].setFont(viewerFont);
 			values[i].setBorder(javax.swing.BorderFactory
           .createLoweredBevelBorder());
-			values[i].setBounds(maxLabWidth + 4, (i + 1) * 32, viewerWidth, 30);
 			values[i].setModel(cfg.getAtt(i));
 			values[i].setBackground(uColor);
 			values[i].setText("------");
@@ -142,6 +172,7 @@ class TuningPanel extends JPanel implements ActionListener {
 
 		// Done
 		computeMaxWidth();
+    height = maxH * rowHeight + titleHeight;
 		placeComponents();
 
 	}
@@ -153,21 +184,26 @@ class TuningPanel extends JPanel implements ActionListener {
     int compH = rowHeight -1;
 
 		if (showCommand)
-			title.setBounds(2, 2, 66 + viewerWidth + setBtnWidth + maxLabWidth, titleHeight-2);
+			title.setBounds(2, 2, 66 + viewerWidth + setterWidth + maxLabWidth, titleHeight-2);
 		else
-			title.setBounds(2, 2, 36 + viewerWidth + setBtnWidth + maxLabWidth, titleHeight-2);
+			title.setBounds(2, 2, 36 + viewerWidth + setterWidth + maxLabWidth, titleHeight-2);
 
 		// Place components
 		for (i = 0; i < nb; i++) {
 
       int y = titleHeight + i*rowHeight;
-      int xl = maxLabWidth + setBtnWidth + viewerWidth;
+      int xl = maxLabWidth + setterWidth + viewerWidth;
 
 			labels[i].setBounds(2, y, maxLabWidth, compH);
 			values[i].setBounds(maxLabWidth + 4, y+1, viewerWidth, compH);
 
-      if (setBtn[i] != null)
-        setBtn[i].setBounds(maxLabWidth + viewerWidth + 6, y+1, setBtnWidth, compH);
+      if(setBtn==null) {
+        if(setters[i]!=null)
+          setters[i].setBounds(maxLabWidth + 4 + viewerWidth, y+1, setterWidth, compH);
+      } else {
+        if (setBtn[i] != null)
+          setBtn[i].setBounds(maxLabWidth + viewerWidth + 6, y+1, setterWidth, compH);
+      }
 
 			if (showCommand) {
 				commands[i].setBounds(xl + 7, y +1, 30, compH);
@@ -186,14 +222,22 @@ class TuningPanel extends JPanel implements ActionListener {
 		int i;
 
 		maxLabWidth = 0;
-    setBtnWidth = 0;
+    setterWidth = 0;
+    rowHeight = 28;
 
 		for (i = 0; i < nb; i++) {
 			Dimension d = labels[i].getPreferredSize();
 			if (d.width > maxLabWidth)
 				maxLabWidth = d.width;
-      if(setBtn[i]!=null)
-        setBtnWidth = 30;
+      if(setBtn==null) {
+        if(setters[i]!=null) {
+          setterWidth = 80;
+          rowHeight = 35;
+        }
+      } else {
+        if(setBtn[i]!=null)
+          setterWidth = 30;
+      }
 		}
 
 	}
@@ -240,9 +284,9 @@ class TuningPanel extends JPanel implements ActionListener {
 	@Override
 	public Dimension getPreferredSize() {
 		if (showCommand)
-			return new Dimension(70 + viewerWidth + setBtnWidth + maxLabWidth, height + 2);
+			return new Dimension(70 + viewerWidth + setterWidth + maxLabWidth, height + 2);
 		else
-			return new Dimension(42 + viewerWidth + setBtnWidth + maxLabWidth, height + 2);
+			return new Dimension(42 + viewerWidth + setterWidth + maxLabWidth, height + 2);
 	}
 
 	public Dimension getMinimumSize() {

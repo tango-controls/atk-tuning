@@ -46,9 +46,10 @@ public class MainPanel extends JFrame {
 	private int nbPanel = 0;
 	private TuningPanel[] panels;
 
-	private final boolean runFromShell;
-	private final boolean showCommand;
-	private final boolean readOnly;
+	private boolean runFromShell = false;
+	private boolean showCommand = false;
+  private boolean showSetter = false;
+	private boolean readOnly = false;
 	private ErrorHistory errWin;
 	private final String appVersion = "ATKTuning " + getVersion();
   private Splash splashScreen = null;
@@ -57,14 +58,6 @@ public class MainPanel extends JFrame {
 	public AttributePolledList attList = null;
 
   private atktuning.Taco.TacoDeviceFactory TacoFactory;
-
-
-	// General constructor
-	public MainPanel() {
-		showCommand = false;
-		readOnly = false;
-		runFromShell = false;
-	}
 
 	public MainPanel(String filename) {
 		this(filename, false);
@@ -86,6 +79,15 @@ public class MainPanel extends JFrame {
 		this.readOnly = readOnly;
 		initComponents(filename);
 	}
+
+  public MainPanel(String filename, boolean runningFromShell,
+                   boolean showCommand, boolean readOnly, boolean showSetter) {
+    this.runFromShell = runningFromShell;
+    this.showCommand = showCommand;
+    this.readOnly = readOnly;
+    this.showSetter = showSetter;
+    initComponents(filename);
+  }
 
   private void initComponents(String filename) {
 
@@ -161,7 +163,7 @@ public class MainPanel extends JFrame {
 
       // Tuning panel
       TuningConfig cfg = new TuningConfig(errWin,list[i], splashScreen, attList, showCommand,i,nbPanel);
-      panels[i] = new TuningPanel(cfg, maxRows, showCommand, readOnly, this);
+      panels[i] = new TuningPanel(cfg, maxRows, showCommand, readOnly, showSetter, this);
       int pWidth = panels[i].getPreferredSize().width;
       if(!cropped && totalWidth + pWidth < MAX_WIDTH) {
         totalWidth += pWidth;
@@ -523,7 +525,7 @@ public class MainPanel extends JFrame {
   }
 
   private static void printUsage() {
-    System.out.println("Usage: atktuning [-conv res_tag] [-h] [-cmd] [-ro] config_filename");
+    System.out.println("Usage: atktuning [-conv res_tag] [-h] [-cmd] [-ro] [-w] config_filename");
   }
 
   private static void printHelp() {
@@ -589,13 +591,15 @@ public class MainPanel extends JFrame {
 		if (showCommand) index++;
 		boolean roMode = "-ro".equals(args[index]);
 		if (roMode)	index++;
+    boolean showEditor = "-w".equals(args[index]);
+    if (showEditor)	index++;
 
 		if (args.length < index + 1) {
       printUsage();
 			System.exit(0);
 		}
 
-		new MainPanel(args[index], true, showCommand, roMode);
+		new MainPanel(args[index], true, showCommand, roMode, showEditor);
 
 	}
 
