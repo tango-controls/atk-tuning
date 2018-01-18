@@ -49,7 +49,9 @@ public class MainPanel extends JFrame {
 	private boolean runFromShell = false;
 	private boolean showCommand = false;
   private boolean showSetter = false;
+  private boolean showBackground = false;
 	private boolean readOnly = false;
+  private String fName = "Dialog,1,14";
 	private ErrorHistory errWin;
 	private final String appVersion = "ATKTuning " + getVersion();
   private Splash splashScreen = null;
@@ -86,6 +88,17 @@ public class MainPanel extends JFrame {
     this.showCommand = showCommand;
     this.readOnly = readOnly;
     this.showSetter = showSetter;
+    initComponents(filename);
+  }
+
+  public MainPanel(String filename, boolean runningFromShell,
+                   boolean showCommand, boolean readOnly, boolean showSetter,String fName,boolean showBackground) {
+    this.runFromShell = runningFromShell;
+    this.showCommand = showCommand;
+    this.readOnly = readOnly;
+    this.showSetter = showSetter;
+    if(fName!=null) this.fName = fName;
+    this.showBackground = showBackground;
     initComponents(filename);
   }
 
@@ -163,7 +176,7 @@ public class MainPanel extends JFrame {
 
       // Tuning panel
       TuningConfig cfg = new TuningConfig(errWin,list[i], splashScreen, attList, showCommand,i,nbPanel);
-      panels[i] = new TuningPanel(cfg, maxRows, showCommand, readOnly, showSetter, this);
+      panels[i] = new TuningPanel(cfg, maxRows, showCommand, readOnly, showSetter, showBackground, fName, this);
       int pWidth = panels[i].getPreferredSize().width;
       if(!cropped && totalWidth + pWidth < MAX_WIDTH) {
         totalWidth += pWidth;
@@ -525,11 +538,25 @@ public class MainPanel extends JFrame {
   }
 
   private static void printUsage() {
-    System.out.println("Usage: atktuning [-conv res_tag] [-h] [-cmd] [-ro] [-w] config_filename");
+    System.out.println("Usage: atktuning [-conv res_tag] [-h] [-cmd] [-ro] [-w] [-f fontname] [-sb] config_filename");
   }
 
   private static void printHelp() {
 
+    System.out
+        .println("  -conv res_tag : Build a configuration file from TACO resource");
+    System.out
+        .println("  -cmd : Show command menu");
+    System.out
+        .println("  -ro : Read only mode");
+    System.out
+        .println("  -w : Display editor in the panel");
+    System.out
+        .println("  -f fontname : Font used by viewer Name,style,size (ex -f Dialog,1,14) 0=PLAIN 1=BOLD 2=ITALIC");
+    System.out
+        .println("  -sb : Show background when attribute is valid");
+    System.out
+        .println("");
     System.out
         .println("  The config file is a list of tango attributes, each line is");
     System.out
@@ -559,6 +586,8 @@ public class MainPanel extends JFrame {
 
 	/* main */
 	public static void main(String args[]) {
+
+    String fName = null;
 
 		if (args.length < 1) {
       printUsage();
@@ -593,13 +622,24 @@ public class MainPanel extends JFrame {
 		if (roMode)	index++;
     boolean showEditor = "-w".equals(args[index]);
     if (showEditor)	index++;
+    if("-f".equals(args[index])) {
+      index++;
+      if(index>=args.length){
+        printUsage();
+        System.exit(0);
+      }
+      fName = args[index];
+      index++;
+    }
+    boolean showBackground = "-sb".equals(args[index]);
+    if (showBackground)	index++;
 
 		if (args.length < index + 1) {
       printUsage();
 			System.exit(0);
 		}
 
-		new MainPanel(args[index], true, showCommand, roMode, showEditor);
+		new MainPanel(args[index], true, showCommand, roMode, showEditor,fName,showBackground);
 
 	}
 

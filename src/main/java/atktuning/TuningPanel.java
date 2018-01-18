@@ -46,10 +46,10 @@ class TuningPanel extends JPanel implements ActionListener {
   static private int viewerWidth = 120;
   static private int titleHeight = 40;
   static private Font titleFont = new Font("Dialog", Font.BOLD, 18);
-  static private Font viewerFont = new Font("Dialog", Font.BOLD, 14);
+  static private Font viewerFont = null;
 
 	public TuningPanel(TuningConfig cfg, int maxH,
-			boolean showCommand, boolean readOnly, boolean showEditor, JFrame parent) {
+			boolean showCommand, boolean readOnly, boolean showEditor, boolean showBackground, String fName, JFrame parent) {
 
 		int i;
 		int nb = cfg.getNbItem();
@@ -57,6 +57,9 @@ class TuningPanel extends JPanel implements ActionListener {
 		this.showCommand = showCommand;
 
 		parentFrame = parent;
+
+    if(viewerFont==null)
+      viewerFont = Utils.getInstance().parseFont(fName);
 
 		setLayout(null);
 		setBorder(BorderFactory.createEtchedBorder());
@@ -136,7 +139,7 @@ class TuningPanel extends JPanel implements ActionListener {
 			values[i] = new SimpleScalarViewer();
       values[i].setHorizontalAlignment(JAutoScrolledText.RIGHT_ALIGNMENT);
       values[i].setMargin(new Insets(0,0,0,10));
-      values[i].setBackgroundColor(getBackground());
+      if(!showBackground) values[i].setBackgroundColor(getBackground());
 			values[i].setFont(viewerFont);
 			values[i].setBorder(javax.swing.BorderFactory
           .createLoweredBevelBorder());
@@ -231,7 +234,7 @@ class TuningPanel extends JPanel implements ActionListener {
 				maxLabWidth = d.width;
       if(setBtn==null) {
         if(setters[i]!=null) {
-          setterWidth = 80;
+          setterWidth = Math.max(setters[i].getPreferredSize().width,setterWidth);
           rowHeight = 35;
         }
       } else {

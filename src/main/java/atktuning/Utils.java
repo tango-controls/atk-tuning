@@ -7,6 +7,9 @@ import fr.esrf.tangoatk.core.ATKException;
 import fr.esrf.tangoatk.core.AttributeSetException;
 import fr.esrf.tangoatk.core.ErrorEvent;
 
+import javax.swing.*;
+import java.awt.*;
+
 /**
  * Utility class
  */
@@ -69,6 +72,25 @@ public class Utils {
   public String[] getResource(String resName) throws fr.esrf.TacoApi.TacoException {
     fr.esrf.TacoApi.TacoDevice ds = new fr.esrf.TacoApi.TacoDevice(getDeviceName(resName));
     return ds.getResource(getAttributeName(resName));
+  }
+
+  public Font parseFont(String name) {
+
+    String fName = "Dialog";
+    int style = Font.BOLD;
+    int size = 14;
+
+    String[] fields = name.split(",");
+    if(fields.length!=3) {
+      JOptionPane.showMessageDialog(null,"Invalid font definition\n"+name,"Error",JOptionPane.ERROR_MESSAGE);
+    } else {
+      fName = fields[0];
+      style = Integer.parseInt(fields[1]);
+      size = Integer.parseInt(fields[2]);
+    }
+
+    return new Font(fName,style,size);
+
   }
 
   public void printXtuningConf(String tag) throws Exception {
