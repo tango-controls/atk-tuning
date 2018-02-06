@@ -81,6 +81,7 @@ class TuningPanel extends JPanel implements ActionListener {
 			// labels[i].setToolTipText(m.getName());
 			labels[i].setBackground(getBackground());
 			labels[i].setHorizontalAlignment(JSmoothLabel.RIGHT_ALIGNMENT);
+      labels[i].setFont(viewerFont);
 			Dimension d = labels[i].getPreferredSize();
 			if (d.width > maxLabWidth)
 				maxLabWidth = d.width;
@@ -101,6 +102,7 @@ class TuningPanel extends JPanel implements ActionListener {
           setters[i].setBackground(getBackground());
           setters[i].setFont(viewerFont);
           setters[i].setModel(cfg.getAtt(i));
+          setters[i].setAlarmEnabled(showBackground);
 
           if (readOnly)
             setters[i].setEnabled(false);
