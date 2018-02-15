@@ -108,8 +108,8 @@ public class TuningConfig {
 
     }
 
-    public void createSettingFrame(int index,String title,INumberScalar model) {
-      setFrames[index] = new SettingFrame(title,model);
+    public void createSettingFrame(int index,String title,INumberScalar model,boolean showBackground) {
+      setFrames[index] = new SettingFrame(title,model,showBackground);
     }
 
     // Return corresponding setting frame
@@ -128,8 +128,8 @@ public class TuningConfig {
     }
 
     // Return the model for an attribute at a specified  index in the list
-    public INumberScalar getAtt(int index) {
-      return (INumberScalar) attList.get(startIndex+index);
+    public IAttribute getAtt(int index) {
+      return (IAttribute) attList.get(startIndex+index);
     }
 
     public boolean hasCommand(int index) {

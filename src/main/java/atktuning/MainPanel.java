@@ -21,11 +21,7 @@ import javax.swing.JScrollPane;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.ApiUtil;
 import fr.esrf.TangoApi.Database;
-import fr.esrf.tangoatk.core.AttributePolledList;
-import fr.esrf.tangoatk.core.DeviceFactory;
-import fr.esrf.tangoatk.core.IEntity;
-import fr.esrf.tangoatk.core.IEntityFilter;
-import fr.esrf.tangoatk.core.INumberScalar;
+import fr.esrf.tangoatk.core.*;
 import fr.esrf.tangoatk.widget.attribute.Trend;
 import fr.esrf.tangoatk.widget.util.*;
 
@@ -50,6 +46,7 @@ public class MainPanel extends JFrame {
 	private boolean showCommand = false;
   private boolean showSetter = false;
   private boolean showBackground = false;
+  private boolean showSettingFrameButton = false;
 	private boolean readOnly = false;
   private String fName = "Dialog,1,14";
 	private ErrorHistory errWin;
@@ -92,13 +89,14 @@ public class MainPanel extends JFrame {
   }
 
   public MainPanel(String filename, boolean runningFromShell,
-                   boolean showCommand, boolean readOnly, boolean showSetter,String fName,boolean showBackground) {
+                   boolean showCommand, boolean readOnly, boolean showSetter,String fName,boolean showBackground,boolean showSettingFrameButton) {
     this.runFromShell = runningFromShell;
     this.showCommand = showCommand;
     this.readOnly = readOnly;
     this.showSetter = showSetter;
     if(fName!=null) this.fName = fName;
     this.showBackground = showBackground;
+    this.showSettingFrameButton = showSettingFrameButton;
     initComponents(filename);
   }
 
@@ -149,7 +147,7 @@ public class MainPanel extends JFrame {
 
     IEntityFilter attfilter = new IEntityFilter() {
       public boolean keep(IEntity entity) {
-        if (entity instanceof INumberScalar) {
+        if (entity instanceof INumberScalar || entity instanceof IBooleanScalar) {
           return true;
         } else {
           System.out
@@ -176,7 +174,7 @@ public class MainPanel extends JFrame {
 
       // Tuning panel
       TuningConfig cfg = new TuningConfig(errWin,list[i], splashScreen, attList, showCommand,i,nbPanel);
-      panels[i] = new TuningPanel(cfg, maxRows, showCommand, readOnly, showSetter, showBackground, fName, this);
+      panels[i] = new TuningPanel(cfg, maxRows, showCommand, readOnly, showSetter, showBackground, showSettingFrameButton, fName, this);
       int pWidth = panels[i].getPreferredSize().width;
       if(!cropped && totalWidth + pWidth < MAX_WIDTH) {
         totalWidth += pWidth;
@@ -538,7 +536,7 @@ public class MainPanel extends JFrame {
   }
 
   private static void printUsage() {
-    System.out.println("Usage: atktuning [-conv res_tag] [-h] [-cmd] [-ro] [-w] [-f fontname] [-sb] config_filename");
+    System.out.println("Usage: atktuning [-conv res_tag] [-h] [-cmd] [-ro] [-w] [-s] [-f fontname] [-sb] config_filename");
   }
 
   private static void printHelp() {
@@ -551,6 +549,8 @@ public class MainPanel extends JFrame {
         .println("  -ro : Read only mode");
     System.out
         .println("  -w : Display editor in the panel");
+    System.out
+        .println("  -s : Display setting frame button");
     System.out
         .println("  -f fontname : Font used by viewer Name,style,size (ex -f Dialog,1,14) 0=PLAIN 1=BOLD 2=ITALIC");
     System.out
@@ -622,6 +622,8 @@ public class MainPanel extends JFrame {
 		if (roMode)	index++;
     boolean showEditor = "-w".equals(args[index]);
     if (showEditor)	index++;
+    boolean showSettingFrameButton = "-s".equals(args[index]);
+    if (showSettingFrameButton)	index++;
     if("-f".equals(args[index])) {
       index++;
       if(index>=args.length){
@@ -639,7 +641,7 @@ public class MainPanel extends JFrame {
 			System.exit(0);
 		}
 
-		new MainPanel(args[index], true, showCommand, roMode, showEditor,fName,showBackground);
+		new MainPanel(args[index], true, showCommand, roMode, showEditor,fName,showBackground,showSettingFrameButton);
 
 	}
 

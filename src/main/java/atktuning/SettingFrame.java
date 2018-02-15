@@ -21,7 +21,7 @@ public class SettingFrame extends JFrame implements ActionListener {
   NumberScalarSetPanel setPanel;
   JButton dismissButton;
 
-  public SettingFrame(String title,INumberScalar model) {
+  public SettingFrame(String title,INumberScalar model,boolean showBackground) {
 
     getContentPane().setLayout(new BorderLayout());
 
@@ -36,6 +36,7 @@ public class SettingFrame extends JFrame implements ActionListener {
     setPanel.setAttModel(model);
     setPanel.setFont(setterFont);
     setPanel.setBorder(BorderFactory.createEmptyBorder(5,5,10,5));
+    setPanel.getViewer().setAlarmEnabled(showBackground);
     getContentPane().add(setPanel, BorderLayout.CENTER);
 
     JPanel btnPanel = new JPanel();

@@ -8,13 +8,13 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import fr.esrf.tangoatk.core.CommandList;
+import fr.esrf.tangoatk.core.IAttribute;
+import fr.esrf.tangoatk.core.IBooleanScalar;
 import fr.esrf.tangoatk.core.INumberScalar;
+import fr.esrf.tangoatk.widget.attribute.BooleanScalarCheckBoxViewer;
 import fr.esrf.tangoatk.widget.attribute.NumberScalarWheelEditor;
 import fr.esrf.tangoatk.widget.attribute.SimplePropertyFrame;
 import fr.esrf.tangoatk.widget.attribute.SimpleScalarViewer;
@@ -28,17 +28,21 @@ class TuningPanel extends JPanel implements ActionListener {
 
 	private final JSmoothLabel title;
 	private final LabelViewer[] labels;
-	private final SimpleScalarViewer[] values;
-  private final NumberScalarWheelEditor[] setters;
+	private final JComponent[] values;
+  private NumberScalarWheelEditor[] setters = null;
 	private CommandMenuViewer[] commands;
 	private final JButton[] propBtn;
-  private final JButton[] setBtn;
+  private JButton[] setBtn = null;
 	private int maxLabWidth = 0;
 	private int height = 0;
 	private final TuningConfig theCfg;
 	private final JFrame parentFrame;
 	private final boolean showCommand;
+  private final boolean showBackground;
+  private final boolean showEditor;
+  private final boolean showSettingFrameButton;
   private int setterWidth = 0;
+  private int setBtnWidth = 0;
   private int rowHeight = 28;
 
 	static private SimplePropertyFrame propFrame = null;
@@ -49,12 +53,15 @@ class TuningPanel extends JPanel implements ActionListener {
   static private Font viewerFont = null;
 
 	public TuningPanel(TuningConfig cfg, int maxH,
-			boolean showCommand, boolean readOnly, boolean showEditor, boolean showBackground, String fName, JFrame parent) {
+			boolean showCommand, boolean readOnly, boolean showEditor, boolean showBackground, boolean showSettingFrameButton, String fName, JFrame parent) {
 
 		int i;
 		int nb = cfg.getNbItem();
 		theCfg = cfg;
 		this.showCommand = showCommand;
+    this.showBackground = showBackground;
+    this.showSettingFrameButton = showSettingFrameButton;
+    this.showEditor = showEditor;
 
 		parentFrame = parent;
 
@@ -76,7 +83,7 @@ class TuningPanel extends JPanel implements ActionListener {
 		labels = new LabelViewer[nb];
 		for (i = 0; i < nb; i++) {
 			labels[i] = new LabelViewer();
-			INumberScalar m = cfg.getAtt(i);
+			IAttribute m = cfg.getAtt(i);
 			labels[i].setModel(m);
 			// labels[i].setToolTipText(m.getName());
 			labels[i].setBackground(getBackground());
@@ -91,18 +98,18 @@ class TuningPanel extends JPanel implements ActionListener {
 		// Create setters button
     if (showEditor) {
 
-      setBtn = null;
       setters = new NumberScalarWheelEditor[nb];
 
       for (i = 0; i < nb; i++) {
 
-        INumberScalar m = cfg.getAtt(i);
-        if (m.isWritable()) {
+        IAttribute m = cfg.getAtt(i);
+        if (m.isWritable() && m instanceof INumberScalar) {
+          INumberScalar ns = (INumberScalar)m;
           setters[i] = new NumberScalarWheelEditor();
           setters[i].setBackground(getBackground());
           setters[i].setFont(viewerFont);
-          setters[i].setModel(cfg.getAtt(i));
-          setters[i].setAlarmEnabled(showBackground);
+          setters[i].setModel(ns);
+          //setters[i].setAlarmEnabled(showBackground);
 
           if (readOnly)
             setters[i].setEnabled(false);
@@ -113,15 +120,16 @@ class TuningPanel extends JPanel implements ActionListener {
 
       }
 
-    } else {
+    }
 
-      setters = null;
+    if( showSettingFrameButton ) {
+
       setBtn = new JButton[nb];
 
       for (i = 0; i < nb; i++) {
 
-        INumberScalar m = cfg.getAtt(i);
-        if (m.isWritable()) {
+        IAttribute m = cfg.getAtt(i);
+        if (m.isWritable() && m instanceof INumberScalar) {
           setBtn[i] = new JButton("...");
           setBtn[i].addActionListener(this);
           if (readOnly)
@@ -136,20 +144,41 @@ class TuningPanel extends JPanel implements ActionListener {
     }
 
     // Create scalar viewer
-		values = new SimpleScalarViewer[nb];
+		values = new JComponent[nb];
 		for (i = 0; i < nb; i++) {
-			values[i] = new SimpleScalarViewer();
-      values[i].setHorizontalAlignment(JAutoScrolledText.RIGHT_ALIGNMENT);
-      values[i].setMargin(new Insets(0,0,0,10));
-      if(!showBackground) values[i].setBackgroundColor(getBackground());
-			values[i].setFont(viewerFont);
-			values[i].setBorder(javax.swing.BorderFactory
-          .createLoweredBevelBorder());
-			values[i].setModel(cfg.getAtt(i));
-			values[i].setBackground(uColor);
-			values[i].setText("------");
-			values[i].setEditable(readOnly);
-			add(values[i]);
+
+      IAttribute m = cfg.getAtt(i);
+
+      if (m instanceof INumberScalar) {
+
+        INumberScalar ns = (INumberScalar)m;
+        SimpleScalarViewer v = new SimpleScalarViewer();
+        v.setHorizontalAlignment(JAutoScrolledText.RIGHT_ALIGNMENT);
+        v.setMargin(new Insets(0, 0, 0, 10));
+        if (!showBackground) v.setBackgroundColor(getBackground());
+        v.setFont(viewerFont);
+        v.setBorder(javax.swing.BorderFactory
+            .createLoweredBevelBorder());
+        v.setModel(ns);
+        v.setBackground(uColor);
+        v.setText("------");
+        v.setEditable(readOnly);
+        values[i] = v;
+
+      }
+
+      if (m instanceof IBooleanScalar) {
+
+        IBooleanScalar bs = (IBooleanScalar)m;
+        BooleanScalarCheckBoxViewer v = new BooleanScalarCheckBoxViewer();
+        v.setAttModel(bs);
+        v.setTrueLabel("");
+        v.setFalseLabel("");
+        values[i] = v;
+
+      }
+
+      add(values[i]);
 		}
 
 		// Create command menu viewer
@@ -189,26 +218,26 @@ class TuningPanel extends JPanel implements ActionListener {
     int compH = rowHeight -1;
 
 		if (showCommand)
-			title.setBounds(2, 2, 66 + viewerWidth + setterWidth + maxLabWidth, titleHeight-2);
+			title.setBounds(2, 2, 66 + viewerWidth + setterWidth + setBtnWidth + maxLabWidth, titleHeight-2);
 		else
-			title.setBounds(2, 2, 36 + viewerWidth + setterWidth + maxLabWidth, titleHeight-2);
+			title.setBounds(2, 2, 36 + viewerWidth + setterWidth + setBtnWidth + maxLabWidth, titleHeight-2);
 
 		// Place components
 		for (i = 0; i < nb; i++) {
 
       int y = titleHeight + i*rowHeight;
-      int xl = maxLabWidth + setterWidth + viewerWidth;
+      int xl = maxLabWidth + setterWidth + viewerWidth + setBtnWidth;
 
 			labels[i].setBounds(2, y, maxLabWidth, compH);
 			values[i].setBounds(maxLabWidth + 4, y+1, viewerWidth, compH);
 
-      if(setBtn==null) {
+      if( showEditor )
         if(setters[i]!=null)
           setters[i].setBounds(maxLabWidth + 4 + viewerWidth, y+1, setterWidth, compH);
-      } else {
-        if (setBtn[i] != null)
-          setBtn[i].setBounds(maxLabWidth + viewerWidth + 6, y+1, setterWidth, compH);
-      }
+
+      if( showSettingFrameButton )
+        if(setBtn[i]!=null)
+          setBtn[i].setBounds(maxLabWidth + viewerWidth + setterWidth + 6, y+1, setBtnWidth, compH);
 
 			if (showCommand) {
 				commands[i].setBounds(xl + 7, y +1, 30, compH);
@@ -228,21 +257,24 @@ class TuningPanel extends JPanel implements ActionListener {
 
 		maxLabWidth = 0;
     setterWidth = 0;
+    setBtnWidth = 0;
     rowHeight = 28;
 
 		for (i = 0; i < nb; i++) {
 			Dimension d = labels[i].getPreferredSize();
 			if (d.width > maxLabWidth)
 				maxLabWidth = d.width;
-      if(setBtn==null) {
+
+      if(showEditor)
         if(setters[i]!=null) {
           setterWidth = Math.max(setters[i].getPreferredSize().width,setterWidth);
           rowHeight = 35;
         }
-      } else {
+
+      if(showSettingFrameButton)
         if(setBtn[i]!=null)
-          setterWidth = 30;
-      }
+         setBtnWidth = 30;
+
 		}
 
 	}
@@ -278,7 +310,7 @@ class TuningPanel extends JPanel implements ActionListener {
 
     if (found) {
       if(theCfg.getSetFrame(i)==null)
-        theCfg.createSettingFrame(i,title.getText(),theCfg.getAtt(i));
+        theCfg.createSettingFrame(i,title.getText(),(INumberScalar)theCfg.getAtt(i),showBackground);
       ATKGraphicsUtils.centerFrameOnScreen(theCfg.getSetFrame(i));
       theCfg.getSetFrame(i).setVisible(true);
       return;
@@ -289,9 +321,9 @@ class TuningPanel extends JPanel implements ActionListener {
 	@Override
 	public Dimension getPreferredSize() {
 		if (showCommand)
-			return new Dimension(70 + viewerWidth + setterWidth + maxLabWidth, height + 2);
+			return new Dimension(70 + viewerWidth + setterWidth + setBtnWidth + maxLabWidth, height + 2);
 		else
-			return new Dimension(42 + viewerWidth + setterWidth + maxLabWidth, height + 2);
+			return new Dimension(42 + viewerWidth + setterWidth + setBtnWidth + maxLabWidth, height + 2);
 	}
 
 	public Dimension getMinimumSize() {
@@ -307,8 +339,13 @@ class TuningPanel extends JPanel implements ActionListener {
     for(int i=0;i<theCfg.getNbItem();i++) {
       labels[i].clearModel();
       theCfg.clearSetFrame(i);
-      values[i].clearModel();
-      if(showCommand) commands[i].setModel((CommandList)null);
+
+      if(values[i] instanceof SimpleScalarViewer)
+        ((SimpleScalarViewer)values[i]).clearModel();
+      else if(values[i] instanceof BooleanScalarCheckBoxViewer)
+        ((BooleanScalarCheckBoxViewer)values[i]).clearModel();
+
+      if(showCommand) commands[i].setModel((CommandList) null);
     }
 
     if(propFrame!=null) {
